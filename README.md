@@ -1,5 +1,6 @@
-# Dbot
-PHP Telegram Bot Framework
+<header>
+	<img src="header.png" style="background: #FFFFFF3F">
+</header>
 
 ## Requirements
 - PHP ^8.0 || ^7.3
