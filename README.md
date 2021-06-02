@@ -12,7 +12,6 @@ PHP Telegram Bot Framework
 [fatah@home]:~$ cd ~/Code
 [fatah@home]:~$ git clone https://github.com/fathurrohman26/dbot.git Dbot
 [fatah@home]:~$ cd Dbot
-[fatah@home]:~$ php --version | grep 8
 [fatah@home]:~$ composer update -vv
 [fatah@home]:~$ vim test/bot.php
 [fatah@home]:~$ php test/bot.php
