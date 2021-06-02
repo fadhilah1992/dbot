@@ -40,3 +40,6 @@ $bot->hears('/^\/start/', function($update, $bot){
 
 $bot->launch();
 ```
+
+## Kontribusi
+Dipersilahkan :)
