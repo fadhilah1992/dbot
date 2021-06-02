@@ -9,9 +9,9 @@ final class Dbot extends Telegram
 {
 	private array $update;
 
-	private string|null $updateType;
+	private ?string $updateType;
 
-	private int|null $last_update_id;
+	private ?int $last_update_id;
 
 	private array $handlers;
 
@@ -122,7 +122,7 @@ final class Dbot extends Telegram
 				$this->last_update_id = null;
 				$this->update = [];
 				while ( true ) {
-					$updates = $this->getUpdates(offset: $this->last_update_id, timeout: $timeout);
+					$updates = $this->getUpdates($this->last_update_id, 100, $timeout);
 					if (count($updates) > 0) {
 						echo "+";
 						$cup = Polling::getLastUpdate($updates);
@@ -140,7 +140,7 @@ final class Dbot extends Telegram
 				print("\n");
 
 				$this->last_update_id += 1;
-				$this->getUpdates(offset: $this->last_update_id, timeout: $timeout);
+				$this->getUpdates($this->last_update_id, 100, $timeout);
 
 				$this->launch($polling, $timeout);
 			}

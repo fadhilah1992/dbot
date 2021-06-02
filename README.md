@@ -2,7 +2,7 @@
 PHP Telegram Bot Framework
 
 ## Requirements
-- PHP ^8.0
+- PHP ^8.0 || ^7.3
 - Telegram Bot
 - Git (Optional) 
 

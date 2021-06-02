@@ -52,7 +52,7 @@ class Telegram
 	 * A simple method for testing your bot's auth token. Requires no parameters. 
 	 * Returns basic information about the bot in form of a User object.
 	 * 
-	 * @return User
+	 * @return array
 	 */
 	public function getMe()
 	{
@@ -87,7 +87,7 @@ class Telegram
 	 * @param  int|integer $timeout         Timeout in seconds for long polling. Defaults to 30, i.e. usual short polling. Should be positive, short polling should be used for testing purposes only.
 	 * @param  array       $allowed_updates A JSON-serialized list of the update types you want your bot to receive. For example, specify [“message”, “edited_channel_post”, “callback_query”] to only receive updates of these types. See Update for a complete list of available update types. Specify an empty list to receive all update types except chat_member (default). If not specified, the previous setting will be used. Please note that this parameter doesn't affect updates created before the call to the getUpdates, so unwanted updates may be received for a short period of time.
 	 * 
-	 * @return Update
+	 * @return array
 	 */
 	public function getUpdates(int $offset = null, int $limit = 100, int $timeout = 30, array $allowed_updates = []): array
 	{
@@ -169,7 +169,7 @@ class Telegram
 	/**
 	 * Use this method to get current webhook status. Requires no parameters. On success, returns a WebhookInfo object. If the bot is using getUpdates, will return an object with the url field empty.
 	 * 
-	 * @return WebhookInfo
+	 * @return array
 	 */
 	public function getWebhookInfo()
 	{
@@ -184,9 +184,9 @@ class Telegram
 	 * @param  string $parse_mode [description]
 	 * @param  array  $extra      [description]
 	 * 
-	 * @return Types/Message
+	 * @return array
 	 */
-	public function sendMessage(int|string $chat_id, string $text, ?string $parse_mode = null, array $extra = [])
+	public function sendMessage($chat_id, string $text, ?string $parse_mode = null, array $extra = [])
 	{
 		$options = [
 			'chat_id'	=> $chat_id,
