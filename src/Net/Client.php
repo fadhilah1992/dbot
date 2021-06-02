@@ -9,7 +9,7 @@ use GuzzleHttp\Exception\TransferException;
 /**
  * class Client
  *
- * @package    Fatah\Dbot\Telegram\Types
+ * @package    Fatah\Dbot\Net
  * @subpackage Client
  * @version    0.1
  * @since      version 0.1

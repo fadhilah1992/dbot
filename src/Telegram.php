@@ -5,7 +5,7 @@ namespace Fatah\Dbot;
 /**
  * class Telegram
  *
- * @package    Fatah\Dbot\Telegram\Types
+ * @package    Fatah\Dbot
  * @subpackage Telegram
  * @version    0.1
  * @since      version 0.1

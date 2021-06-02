@@ -2,8 +2,17 @@
 
 namespace Fatah\Dbot\Net;
 
-use Fatah\Dbot\Telegram\Types;
-
+/**
+ * class Polling
+ *
+ * @package    Fatah\Dbot\Net
+ * @subpackage Polling
+ * @version    0.1
+ * @since      version 0.1
+ * @author     fathurrohman <https://github.com/fathurrohman26>
+ *
+ * Polling Main Class
+ */
 class Polling
 {
 	public static function getLastUpdate(array $updates): array
@@ -27,7 +36,7 @@ class Polling
 
 		return [
 			'last_update_id' => $max,
-			'update' => new $update
+			'update' => $update
 		];
 	}
 }

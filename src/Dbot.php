@@ -5,6 +5,17 @@ namespace Fatah\Dbot;
 use Fatah\Dbot\Telegram;
 use Fatah\Dbot\Net\Polling;
 
+/**
+ * class Dbot
+ *
+ * @package    Fatah\Dbot
+ * @subpackage Dbot
+ * @version    0.1
+ * @since      version 0.1
+ * @author     fathurrohman <https://github.com/fathurrohman26>
+ *
+ * Dbot Main Class
+ */
 final class Dbot extends Telegram
 {
 	private array $update;
