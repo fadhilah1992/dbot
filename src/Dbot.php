@@ -1,159 +1,265 @@
 <?php 
+/**
+ * Dbot
+ * Dbot Main Class
+ * php version 8.0.7
+ *
+ * @category Main
+ * @package  Dbot
+ * @author   fathurrohman <fathurrohmanrosyadi@gmail.com>
+ * @license  https://github.com/fathurrohman26/dbot/blob/main/LICENSE MIT License
+ * @version  GIT: @0.1@
+ * @link     https://github.com/fathurrohman26/dbot
+ */
 
 namespace Fatah\Dbot;
 
-use Fatah\Dbot\Telegram;
-use Fatah\Dbot\Net\Polling;
+use Exception;
 
-/**
- * class Dbot
- *
- * @package    Fatah\Dbot
- * @subpackage Dbot
- * @version    0.1
- * @since      version 0.1
- * @author     fathurrohman <https://github.com/fathurrohman26>
- *
- * Dbot Main Class
- */
+use Fatah\Dbot\Context;
+use Fatah\Dbot\Telegram;
+
+use Fatah\Dbot\Network\Client;
+use Fatah\Dbot\Network\Polling;
+
 final class Dbot extends Telegram
 {
+	private array $options;
+
 	private array $update;
-
-	private ?string $updateType;
-
-	private ?int $last_update_id;
 
 	private array $handlers;
 
-	public function __construct(string $token, int $timeout = 5)
-	{
-		parent::__construct($token, $timeout);
+	private bool $verbose;
 
+	private Telegram $telegram;
+
+	private ?string $updateType;
+	private ?string $updateSubType;
+
+	private $catch;
+
+	public function __construct(string $token, array $options = [])
+	{
+		$this->options = [];
+
+		if (isset($options['verbose'])) {
+			if (is_bool($options['verbose'])) {
+				$this->verbose($options['verbose']);    
+			} else {
+				$this->verbose();
+			}
+		} else {
+			$this->verbose();
+		}
+
+		if (!isset($options['timeout'])) {
+			$this->options['timeout'] = 5;
+		} else {
+			if (is_int($options['timeout'])) {
+				$this->options['timeout'] = $options['timeout'];
+			} else {
+				$this->options['timeout'] = 5;
+			}
+		}
+
+		$this->validateToken($token);
 		$this->update = [];
-		$this->updateType = null;
-		$this->last_update_id = null;
-		$this->handlers = [];
+
+		$this->catch(function($updateType, $e){
+			print("\n");
+			print("[Dbot\Error] Sepertinya telah terjadi error untuk tipe update (".$updateType.") Error Message: " . $e->getMessage());
+			print("\n");
+		});
+
+		$this->telegram = new Telegram($token, $this->options);
+
+		parent::__construct($token, $this->options);
 	}
 
-	public function updateType()
+	private function validateToken(string $token): void
 	{
-		return $this->updateType;
+		$x = explode(':', $token);
+		if (count($x) !== 2) {
+			die("Sepertinya token bot tidak valid!");
+		} else {
+
+			if (intval($x[0]) === 0) {
+				die("Sepertinya token bot tidak valid!");
+			}
+
+			if (is_string($x[1]) === false) {
+				die("Sepertinya token bot tidak valid!");
+			}
+		}
 	}
 
-	public function on(string $updateType, callable $callback)
+	public function verbose(bool $value = true): void
+	{
+		$this->verbose = $value;
+	}
+
+	public function catch(callable $handler)
+	{
+		$this->catch = $handler;
+	}
+
+	public function on(string $updateType, callable $callback): void
 	{
 		$this->registerHandler($updateType, $callback);
 	}
 
 	public function hears(string $pattern, callable $callback)
 	{
-		$this->registerHandler('text', function($update, $bot) use ($pattern, $callback) {
-			$text = $update['message']['text'];
+		$this->registerHandler('text', function($ctx) use ($pattern, $callback) {
+			$text = $ctx->getText();
 			if (preg_match('/^(\/)(.*)(\/)(.+)$/mi', $pattern)) {
 				if (preg_match($pattern, $text)) {
-					$callback($update, $bot);
+					$callback($ctx);
 				}
 			}
 
 			if ($text === $pattern) {
-				$callback($update, $bot);
+				$callback($ctx);
 			}
 		});
 	}
 
-	public function getRegistredHandlers()
+	public function launch(bool $polling = true, array $options = [])
 	{
-		return $this->handlers;
-	}
+		if ($polling) {
+			$args = [
+				'offset'  => null,
+				'limit'   => 100,
+				'timeout' => 0,
+				'allowed_updates' => []
+			];
 
-	private function registerHandler(string $condition, callable $callback)
-	{
-		$this->handlers[$condition] []= $callback;
-	}
+			if (!empty($options)) {
+				$args = array_merge($args, $options);
+			}
 
-	private function execRegistredHanlders()
-	{
-		foreach ($this->getRegistredHandlers() as $key => $callback) {
-			if ( $this->getUpdateType($key) == $key ) {
-				$this->updateType = $key;
-				foreach ($this->getRegistredHandlers()[$key] as $handler) {
-					call_user_func_array($handler, [ $this->update, $this ]);
+			$this->update = [];
+			try {
+				while ( true ) {
+					$updates = $this->getUpdates($args['offset'], $args['limit'], $args['timeout'], $args['allowed_updates']);
+					if (count($updates) > 0) {
+						if ($this->verbose) {
+							echo "+";
+							$lup = $this->getLastUpdate($updates);
+
+							$this->update   = $lup['update'];
+							$args['offset'] = $lup['last_update_id'] + 1;
+
+							$this->updateType = $this->updateType();
+
+							$this->execRegistredHanlders();
+						}
+					} else {
+						if ($this->verbose) {
+							echo "-";
+						}
+					}
+					sleep(0.5);
 				}
+			} catch (Exception $e) {
+				$updateType = !is_null($this->updateSubType) ? $this->updateSubType : $this->updateType;
+				call_user_func_array($this->catch, [ $updateType, $e ]);
+
+				$args['offset'] += 1;
+				$this->getUpdates($args['offset'], $args['limit'], $args['timeout'], $args['allowed_updates']);
+				$this->launch($polling, $options);
 			}
 		}
 	}
 
-	private function getUpdateType(string $message)
+	private function condition(string $cond): bool
 	{
-		if (isset($this->update['message'])) {
-			return $this->parseUpdateMessage($message);
-		} elseif (isset($this->update['edited_message'])) {
-			return 'edited_message';
-		} elseif (isset($this->update['channel_post'])) {
-			return 'channel_post';
-		} elseif (isset($this->update['edited_channel_post'])) {
-			return 'edited_channel_post';
-		} elseif (isset($this->update['inline_query'])) {
-			return 'inline_query';
-		} elseif (isset($this->update['chosen_inline_result'])) {
-			return 'chosen_inline_result';
-		} elseif (isset($this->update['callback_query'])) {
-			return 'callback_query';
-		} elseif (isset($this->update['shipping_query'])) {
-			return 'shipping_query';
-		} elseif (isset($this->update['pre_checkout_query'])) {
-			return 'pre_checkout_query';
-		} elseif (isset($this->update['poll'])) {
-			return 'poll';
-		} elseif (isset($this->update['poll_answer'])) {
-			return 'poll_answer';
-		} elseif (isset($this->update['my_chat_member'])) {
-			return 'my_chat_member';
-		} elseif (isset($this->update['chat_member'])) {
-			return 'chat_member';
-		} else {
-			return 'message';
+		if ($this->updateType() === $cond) {
+			return true;
+		} elseif ($this->updateSubType($cond)) {
+			return true;
+		}
+		return false;
+	}
+
+	private function getLastUpdate(array $updates): array
+	{
+		$update_ids = [];
+
+		foreach ($updates as $update) {
+			$update_ids []= $update['update_id'];
+		}
+
+		$max = max($update_ids);
+		foreach ($updates as $update) {
+			$update = $update;
+			if ($update['update_id'] == $max) {
+				return [
+					'last_update_id' => $max,
+					'update' => $update
+				];
+			}
 		}
 	}
 
-	private function parseUpdateMessage(string $key)
+	private function updateType(): ?string
 	{
-		$update = $this->update['message'];
-		if (isset($update[$key]) && !empty($update[$key])) {
-			return $key;
+		if (!empty($this->update)) {
+			if (isset($this->update['edited_message'])) {
+				return 'edited_message';
+			} elseif (isset($this->update['channel_post'])) {
+				return 'channel_post';
+			} elseif (isset($this->update['edited_channel_post'])) {
+				return 'edited_channel_post';
+			} elseif (isset($this->update['inline_query'])) {
+				return 'inline_query';
+			} elseif (isset($this->update['chosen_inline_result'])) {
+				return 'chosen_inline_result';
+			} elseif (isset($this->update['callback_query'])) {
+				return 'callback_query';
+			} elseif (isset($this->update['shipping_query'])) {
+				return 'shipping_query';
+			} elseif (isset($this->update['pre_checkout_query'])) {
+				return 'pre_checkout_query';
+			} elseif (isset($this->update['poll'])) {
+				return 'poll';
+			} elseif (isset($this->update['poll_answer'])) {
+				return 'poll_answer';
+			} elseif (isset($this->update['my_chat_member'])) {
+				return 'my_chat_member';
+			} elseif (isset($this->update['chat_member'])) {
+				return 'chat_member';
+			} else {
+				return 'message';
+			}
 		}
-		return 'message';
+		return null;
 	}
 
-	public function launch(bool $polling = true, int $timeout = 0)
+	private function updateSubType(string $type): bool
 	{
-		if ($polling) {
-			try {
-				$this->last_update_id = null;
-				$this->update = [];
-				while ( true ) {
-					$updates = $this->getUpdates($this->last_update_id, 100, $timeout);
-					if (count($updates) > 0) {
-						echo "+";
-						$cup = Polling::getLastUpdate($updates);
-						$this->update = $cup['update'];
-						$this->last_update_id = (int) $cup['last_update_id'] + 1;
+		if (!empty($this->updateType()) && $this->updateType() === 'message') {
+			if (isset($this->update['message'][$type]) && !empty($this->update['message'][$type])) {
+				$this->updateSubType = $type;
+				return true;
+			}
+		}
+		return false;
+	}
 
-						$this->execRegistredHanlders();
-					} else {
-						echo "-";
-					}
+	private function registerHandler(string $updateType, callable $callback): void
+	{
+		$this->handlers[$updateType] []= $callback;
+	}
+
+	private function execRegistredHanlders()
+	{
+		foreach ($this->handlers as $key => $cbs) {
+			if ($this->condition($key)) {
+				foreach ($cbs as $callback) {
+					call_user_func_array($callback, [ new Context($this->update, $this->telegram) ]);
 				}
-			} catch (\Exception $e) {
-				print("\n");
-				print("[Dbot\Error] Ooops, encountered an error for " . $this->updateType() . " : " . $e->getMessage());
-				print("\n");
-
-				$this->last_update_id += 1;
-				$this->getUpdates($this->last_update_id, 100, $timeout);
-
-				$this->launch($polling, $timeout);
 			}
 		}
 	}

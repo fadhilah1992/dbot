@@ -1,34 +1,10 @@
-<header>
-	<img src="docs/header.png" style="background: #FFFFFF3F">
-</header>
-
-## Requirements
-- PHP ^8.0 || ^7.3
-- Telegram Bot
-- Git (Optional) 
-
-## Install & Test
-
-```bash
-[fatah@home]:~$ cd ~/Code
-[fatah@home]:~$ git clone https://github.com/fathurrohman26/dbot.git Dbot
-[fatah@home]:~$ cd Dbot
-[fatah@home]:~$ composer update -vv
-[fatah@home]:~$ # sesuakan token bot
-[fatah@home]:~$ vim example/bot.php
-[fatah@home]:~$ php example/bot.php
-```
-
-## Source
-`example/bot.php`
-```php
 <?php 
 
 use Fatah\Dbot\Dbot;
 
 require_once __DIR__ . '/../vendor/autoload.php';
 
-$bot = new Dbot('1560996231:AAHMWHOALG8Y2pS-3bqZsyhQsRVdnx98i6E');
+$bot = new Dbot('TOKEN-BOT');
 
 $bot->on('text', function($ctx){
 	$text = $ctx->getText();
@@ -95,16 +71,3 @@ $bot->hears('foto_up', function($ctx){
 });
 
 $bot->launch();
-```
-
-## Catatan
-Untuk method telegram ataupun Context yang belum ada, bisa menggunakan default method Telegram `$this->request('namaMethod', [ 'parameter' => 'isi_paramter' ])`
-Bisa juga dengan membuatnya langsung pada class Telegram `src/Telegram.php` dan lakukan pull request hehe :), Mari kembangkan bersama bersama :)
-
-## Credits
-- fatah @fathurrohman26
-- -
-- -
-
-## Kontribusi
-Dipersilahkan :)
