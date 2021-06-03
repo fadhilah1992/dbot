@@ -28,7 +28,7 @@ use Fatah\Dbot\Dbot;
 
 require_once __DIR__ . '/../vendor/autoload.php';
 
-$bot = new Dbot('1560996231:AAHMWHOALG8Y2pS-3bqZsyhQsRVdnx98i6E');
+$bot = new Dbot('TOKEN-BOT');
 
 $bot->on('text', function($ctx){
 	$text = $ctx->getText();
@@ -98,13 +98,15 @@ $bot->launch();
 ```
 
 ## Catatan
-Untuk method telegram ataupun Context yang belum ada, bisa menggunakan default method Telegram `$this->request('namaMethod', [ 'parameter' => 'isi_paramter' ])`
+Untuk method telegram yang belum ada, bisa menggunakan default method Telegram `$this->request('namaMethod', [ 'parameter' => 'isi_paramter' ])` jika pada callback Context maka gunakan `$ctx->telegram->request('namaMethod', [ 'parameter' => 'isi_paramter' ])` 
 Bisa juga dengan membuatnya langsung pada class Telegram `src/Telegram.php` dan lakukan pull request hehe :), Mari kembangkan bersama bersama :)
 
 ## Credits
-- fatah @fathurrohman26
-- -
-- -
+- fatah 
+-
+-
+-
+- 
 
 ## Kontribusi
 Dipersilahkan :)
