@@ -64,7 +64,10 @@ final class Dbot extends Telegram
 		}
 
 		$this->validateToken($token);
-		$this->update = [];
+
+		$this->update        = [];
+		$this->updateType    = null;
+		$this->updateSubType = null;
 
 		$this->catch(function($updateType, $e){
 			print("\n");
@@ -128,6 +131,13 @@ final class Dbot extends Telegram
 	public function launch(bool $polling = true, array $options = [])
 	{
 		if ($polling) {
+			// jika menggunakan polling maka webhook harus di unset jika sebelumnya di set
+			$webhook = $this->getWebhookInfo();
+			if (!empty($webhook['url'])) {
+				$this->deleteWebhook(true);
+			}
+			unset($webhook);
+
 			$args = [
 				'offset'  => null,
 				'limit'   => 100,
@@ -139,7 +149,6 @@ final class Dbot extends Telegram
 				$args = array_merge($args, $options);
 			}
 
-			$this->update = [];
 			try {
 				while ( true ) {
 					$updates = $this->getUpdates($args['offset'], $args['limit'], $args['timeout'], $args['allowed_updates']);
@@ -150,8 +159,6 @@ final class Dbot extends Telegram
 
 							$this->update   = $lup['update'];
 							$args['offset'] = $lup['last_update_id'] + 1;
-
-							$this->updateType = $this->updateType();
 
 							$this->execRegistredHanlders();
 						}
@@ -177,9 +184,11 @@ final class Dbot extends Telegram
 	{
 		if ($this->updateType() === $cond) {
 			return true;
+
 		} elseif ($this->updateSubType($cond)) {
 			return true;
 		}
+
 		return false;
 	}
 
