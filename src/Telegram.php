@@ -26,7 +26,7 @@ class Telegram
         $this->client = new Client($token, $options);
     }
 
-    public function request(string $method, array $params = []): array
+    public function request(string $method, array $params = [])
     {
         $request = $this->client->callApi($method, $params);
         if ((bool)$request['ok'] === true) {
