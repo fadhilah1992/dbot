@@ -2,6 +2,8 @@
 	<img src="docs/header.png" style="background: #FFFFFF3F">
 </header>
 
+![GitHub](https://img.shields.io/github/license/fathurrohman26/dbot) ![GitHub issues](https://img.shields.io/github/issues/fathurrohman26/dbot) ![GitHub pull requests](https://img.shields.io/github/issues-pr/fathurrohman26/dbot)
+
 ## Dbot
 Dbot adalah sebuah Framework Bot Telegram untuk bahasa pemrograman PHP, dan saat ini masih baru lahir, dan dalam mode pengembangan, kontribusi anda sangat kami harapkan untuk membuat Dbot semakin berkembang, dengan harapan bisa bermaanfaat bagi umum.
 
