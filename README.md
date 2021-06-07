@@ -103,7 +103,7 @@ Bisa juga dengan membuatnya langsung pada class Telegram `src/Telegram.php` dan 
 
 ## Credits
 - fatah 
--
+- fadhilah1992
 -
 -
 - 
