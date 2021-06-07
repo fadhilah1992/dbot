@@ -46,6 +46,16 @@ class Telegram
         return $request;
     }
 
+    public function getWebhookInfo()
+    {
+        return $this->request('getWebhookInfo');
+    }
+
+    public function deleteWebhook(bool $drop_pending_updates = false)
+    {
+        return $this->request('deleteWebhook', [ 'drop_pending_updates' => $drop_pending_updates ]);
+    }
+
     public function getMe(): array
     {
         return $this->request('getMe');
@@ -117,10 +127,5 @@ class Telegram
 
         $params['photo'] = $photo;
         return $this->request('sendPhoto', $params);
-    }
-
-    public function getWebhookInfo()
-    {
-        return $this->request('getWebhookInfo');
     }
 }
