@@ -3,9 +3,9 @@
 </header>
 
 [![Bot API Version](https://img.shields.io/badge/Bot%20API-v5.2-f36caf.svg?style=flat-square)](https://core.telegram.org/bots/api)
-![GitHub](https://img.shields.io/github/license/fathurrohman26/dbot?style=flat-square) 
-![GitHub issues](https://img.shields.io/github/issues/fathurrohman26/dbot?style=flat-square) 
-![GitHub pull requests](https://img.shields.io/github/issues-pr/fathurrohman26/dbot?style=flat-square)
+[![GitHub](https://img.shields.io/github/license/fathurrohman26/dbot?style=flat-square)](https://github.com/fathurrohman26/dbot/blob/main/LICENSE)
+[![GitHub issues](https://img.shields.io/github/issues/fathurrohman26/dbot?style=flat-square)](https://github.com/fathurrohman26/dbot/issues) 
+[![GitHub pull requests](https://img.shields.io/github/issues-pr/fathurrohman26/dbot?style=flat-square)](https://github.com/fathurrohman26/dbot/pulls)
 
 ## Dbot
 Dbot adalah sebuah Framework Bot Telegram untuk bahasa pemrograman PHP, dan saat ini masih baru lahir, dan dalam mode pengembangan, kontribusi anda sangat kami harapkan untuk membuat Dbot semakin berkembang, dengan harapan bisa bermaanfaat bagi umum.
