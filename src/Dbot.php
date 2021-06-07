@@ -177,6 +177,33 @@ final class Dbot extends Telegram
 				$this->getUpdates($args['offset'], $args['limit'], $args['timeout'], $args['allowed_updates']);
 				$this->launch($polling, $options);
 			}
+		} else {
+			// update method webhook
+			try {
+				$updates = file_get_contents('php://input');
+				$updates = json_decode($updates, true);
+
+				$this->update = $updates;
+				$this->execRegistredHanlders();
+			} catch (Exception $e) {
+				if (isset($options['webhook_log'])) {
+					$logpath = $options['webhook_log'];
+				} else {
+					$logpath = $_SERVER['DOCUMENT_ROOT'] . '/webhook_log.txt';
+				}
+
+				try {
+					$logpath = realpath($logpath);
+					if (!is_file($logpath)) {
+						$logpath = $_SERVER['DOCUMENT_ROOT'] . '/webhook_log.txt';
+					}
+
+					file_put_contents($logpath, $e->getMessage(), FILE_APPEND);
+				} catch (Exception $e) {
+					return;
+				}
+				return;
+			}
 		}
 	}
 

@@ -56,6 +56,32 @@ class Telegram
         return $this->request('deleteWebhook', [ 'drop_pending_updates' => $drop_pending_updates ]);
     }
 
+    public function setWebhook(string $url, $certificate = null, array $extra = [])
+    {
+        $params = [
+            'url' => $url
+        ];
+
+        if (!empty($extra)) {
+            $params = array_merge($params, $extra);
+        }
+
+        if (!is_null($certificate)) {
+            if (file_exists($certificate)) {
+                $file = [
+                    'file_name' => 'certificate',
+                    'file_path' => $certificate
+                ];
+
+                return $this->upload('setWebhook', $file, $params);
+            }
+
+            $params['certificate'] = $certificate;
+        }
+
+        return $this->request('setWebhook', $params);
+    }
+
     public function getMe(): array
     {
         return $this->request('getMe');
