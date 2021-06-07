@@ -8,8 +8,6 @@ $bot = new Dbot('BOT-TOKEN');
 
 $bot->on('text', function($ctx){
 	$text = $ctx->getText();
-	// $text = $ctx->getMessage('text')
-	// $text = $ctx->update['message']['text'];
 	
 	if ($text == 'p') {
 		$ctx->reply('Hello *World!*', 'Markdown');
@@ -70,4 +68,7 @@ $bot->hears('foto_up', function($ctx){
 	$ctx->replyWithPhoto($photo, 'foto upload');
 });
 
-$bot->launch();
+
+$bot->launch(false, [ 
+	'webhook_log' => __DIR__ . '/webhook_log.txt'
+]);
