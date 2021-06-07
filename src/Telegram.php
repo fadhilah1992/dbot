@@ -31,8 +31,14 @@ class Telegram
         $request = $this->client->callApi($method, $params);
         if ((bool)$request['ok'] === true) {
             return $request['result']['result'];
+        } else {
+            // error response
+            if (isset($request['error'])) {
+                return $request;
+            }
+
+            return $request;
         }
-        return [];
     }
 
     public function upload(string $method, array $file, array $params = [])
@@ -49,7 +55,7 @@ class Telegram
         return $this->request('getMe');
     }
 
-    public function getUpdates(?int $offset = null, int $limit = 100, int $timeout = 30, array $allowed_updates): array
+    public function getUpdates(?int $offset = null, int $limit = 100, int $timeout = 30, array $allowed_updates = []): array
     {
         $params = [
             'limit'   => $limit,
