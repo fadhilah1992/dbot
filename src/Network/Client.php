@@ -127,7 +127,13 @@ class Client
             $error['description'] = Psr7\Message::toString($e->getRequest());
         }
 
-        return (!is_null($error['description'])) ? $error : $data;
+        if (!is_null($error['description'])) {
+            return $error;
+        }
+
+        $data['ok'] = (bool)$data['result']['ok'];
+
+        return $data;
     }
 
     /**
@@ -177,7 +183,7 @@ class Client
             return $error;
         }
 
-        $data['ok'] = (bool)$data['ok'];
+        $data['ok'] = (bool)$data['result']['ok'];
 
         return $data;
     }
