@@ -64,7 +64,10 @@ final class Dbot extends Telegram
 		}
 
 		$this->validateToken($token);
-		$this->update = [];
+
+		$this->update        = [];
+		$this->updateType    = null;
+		$this->updateSubType = null;
 
 		$this->catch(function($updateType, $e){
 			print("\n");
@@ -128,6 +131,13 @@ final class Dbot extends Telegram
 	public function launch(bool $polling = true, array $options = [])
 	{
 		if ($polling) {
+			// jika menggunakan polling maka webhook harus di unset jika sebelumnya di set
+			$webhook = $this->getWebhookInfo();
+			if (!empty($webhook['url'])) {
+				$this->deleteWebhook(true);
+			}
+			unset($webhook);
+
 			$args = [
 				'offset'  => null,
 				'limit'   => 100,
@@ -139,7 +149,6 @@ final class Dbot extends Telegram
 				$args = array_merge($args, $options);
 			}
 
-			$this->update = [];
 			try {
 				while ( true ) {
 					$updates = $this->getUpdates($args['offset'], $args['limit'], $args['timeout'], $args['allowed_updates']);
@@ -150,8 +159,6 @@ final class Dbot extends Telegram
 
 							$this->update   = $lup['update'];
 							$args['offset'] = $lup['last_update_id'] + 1;
-
-							$this->updateType = $this->updateType();
 
 							$this->execRegistredHanlders();
 						}
@@ -170,6 +177,33 @@ final class Dbot extends Telegram
 				$this->getUpdates($args['offset'], $args['limit'], $args['timeout'], $args['allowed_updates']);
 				$this->launch($polling, $options);
 			}
+		} else {
+			// update method webhook
+			try {
+				$updates = file_get_contents('php://input');
+				$updates = json_decode($updates, true);
+
+				$this->update = $updates;
+				$this->execRegistredHanlders();
+			} catch (Exception $e) {
+				if (isset($options['webhook_log'])) {
+					$logpath = $options['webhook_log'];
+				} else {
+					$logpath = $_SERVER['DOCUMENT_ROOT'] . '/webhook_log.txt';
+				}
+
+				try {
+					$logpath = realpath($logpath);
+					if (!is_file($logpath)) {
+						$logpath = $_SERVER['DOCUMENT_ROOT'] . '/webhook_log.txt';
+					}
+
+					file_put_contents($logpath, $e->getMessage(), FILE_APPEND);
+				} catch (Exception $e) {
+					return;
+				}
+				return;
+			}
 		}
 	}
 
@@ -177,9 +211,11 @@ final class Dbot extends Telegram
 	{
 		if ($this->updateType() === $cond) {
 			return true;
+
 		} elseif ($this->updateSubType($cond)) {
 			return true;
 		}
+
 		return false;
 	}
 

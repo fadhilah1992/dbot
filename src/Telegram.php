@@ -26,13 +26,15 @@ class Telegram
         $this->client = new Client($token, $options);
     }
 
-    public function request(string $method, array $params = []): array
+    public function request(string $method, array $params = [])
     {
         $request = $this->client->callApi($method, $params);
         if ((bool)$request['ok'] === true) {
             return $request['result']['result'];
+        } else {
+            // error response
+            return $request;
         }
-        return [];
     }
 
     public function upload(string $method, array $file, array $params = [])
@@ -44,12 +46,48 @@ class Telegram
         return $request;
     }
 
+    public function getWebhookInfo()
+    {
+        return $this->request('getWebhookInfo');
+    }
+
+    public function deleteWebhook(bool $drop_pending_updates = false)
+    {
+        return $this->request('deleteWebhook', [ 'drop_pending_updates' => $drop_pending_updates ]);
+    }
+
+    public function setWebhook(string $url, $certificate = null, array $extra = [])
+    {
+        $params = [
+            'url' => $url
+        ];
+
+        if (!empty($extra)) {
+            $params = array_merge($params, $extra);
+        }
+
+        if (!is_null($certificate)) {
+            if (file_exists($certificate)) {
+                $file = [
+                    'file_name' => 'certificate',
+                    'file_path' => $certificate
+                ];
+
+                return $this->upload('setWebhook', $file, $params);
+            }
+
+            $params['certificate'] = $certificate;
+        }
+
+        return $this->request('setWebhook', $params);
+    }
+
     public function getMe(): array
     {
         return $this->request('getMe');
     }
 
-    public function getUpdates(?int $offset = null, int $limit = 100, int $timeout = 30, array $allowed_updates): array
+    public function getUpdates(?int $offset = null, int $limit = 100, int $timeout = 30, array $allowed_updates = []): array
     {
         $params = [
             'limit'   => $limit,
