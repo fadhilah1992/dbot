@@ -118,4 +118,9 @@ class Telegram
         $params['photo'] = $photo;
         return $this->request('sendPhoto', $params);
     }
+
+    public function getWebhookInfo()
+    {
+        return $this->request('getWebhookInfo');
+    }
 }
