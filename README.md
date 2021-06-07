@@ -34,7 +34,7 @@ Untuk menggunakan fitur update dengan metode webhook ikuti langkah berikut:
 - `[fatah@home]:~$ ./ngrok http 8080`
 - Maka sekarang server bot yang berjalan pada localhost:8080 dapat di akses dari internet menggunakan url dari `ngrok` 
 - Set url webhook bot melalui browser `https://api.telegram.org/bot{TOKEN}/setWebhook?url={url-forward-ngrok}`
-- Atau dapat juga dengan menggunakan file `example/setwebhook.php` dengan menyesuaikan token dan url, Lalu eksekusi file `php example/setwebhook.php`
+- Atau dapat juga dengan menggunakan file `example/setWebhook.php` dengan menyesuaikan token dan url, Lalu eksekusi file `php example/setWebhook.php`
 
 
 ## Catatan
@@ -129,7 +129,7 @@ $bot->hears('foto_url', function($ctx){
 // sendPhoto dengan mengupload foto dari file lokal
 $bot->hears('foto_up', function($ctx){
 	// upload foto
-	$photo = __DIR__ . '/doraemon.jpg';
+	$photo = __DIR__ . '/example-files/doraemon.jpg';
 	$ctx->replyWithPhoto($photo, 'foto upload');
 });
 

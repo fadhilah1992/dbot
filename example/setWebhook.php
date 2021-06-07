@@ -12,6 +12,6 @@ var_dump($bot->getWebhookInfo());
 
 // custom certificate file
 /**
- * $bot->setWebhook('url-webhook', __DIR__ . '/cert.pem');
+ * $bot->setWebhook('url-webhook', __DIR__ . '/example-ssl/cert.pem');
  * var_dump($bot->getWebhookInfo());
  */

@@ -1,47 +1,66 @@
-<?php 
+<?php
 
 use Fatah\Dbot\Dbot;
 
 require_once __DIR__ . '/../vendor/autoload.php';
 
-$bot = new Dbot('BOT-TOKEN');
+$bot = new Dbot('token-bot');
 
-$bot->on('text', function($ctx){
+// handle tipe update message
+$bot->on('message', function($ctx){
+    // variabel $ctx berisi instansi dari `Fatah\Dbot\Context` yang merupakan class yang berisi context update saat ini
+    $update = $ctx->update; // array dari update saat ini
+    $chat   = $update['message']['chat'];
+    // bisa juga menggunakan shortcut dari Context
+    $chat   = $ctx->getChat();
+    $from   = $ctx->getFrom();
+    
+    // dapatkan id  chat dengan shortcut Context
+    $chat_id = $ctx->getChat('id');
+    
+    // id message
+    $message_id = $ctx->getMessage('message_id');
+    
+    // untuk mendeteksi subUpdateType dari tipe update message untuk saat ini dilakukan secara manual sbb:
+    $message = $ctx->getMessage();
+    
+    // cek apakah ada text didalam update message
+    if (isset($message['text'])) {
+        // dapatkan text
 	$text = $ctx->getText();
-	// $text = $ctx->getMessage('text')
-	// $text = $ctx->update['message']['text'];
 	
-	if ($text == 'p') {
-		$ctx->reply('Hello *World!*', 'Markdown');
-	} elseif ($text == 'pp') {
-		// manual
-		$ctx->telegram->sendMessage($ctx->getChat('id'), '<b>Hello World!</b>', [ 
-			'parse_mode' => 'HTML'
-		]);
-	} elseif ($text == 'ppp') {
-		// manual
-		$ctx->telegram->sendMessage($ctx->update['message']['chat']['id'], 'Hello World!', [
-			'reply_to_message_id' => $ctx->getMessage('id')
-		]);
-	} elseif ($text == 'sticker') {
-		$sticker = 'CAACAgUAAxkBAAKRAWC4GpTIb_PIw8Ze_ENXackrb3slAAIbAQACksQIV05PwRXgezXdHwQ';
-		$ctx->replyWithSticker($sticker);
+	if (strtolower($text) == "/start") {
+	    // gunakan fitur reply dari object $ctx
+	    $ctx->reply('Halo, aku dibuat dengan *Dbot*', 'Markdown');
+	} elseif (strtolower($text) == "/ping") {
+	    $ctx->replyWithHTML('<b>pong!!</b>');
 	}
+    }
 });
 
+// untuk handle subTypeUpdate dari tipe update message bisa menggunakan method on() seperti diatas
+$bot->on('text', function($ctx){
+    $text = strtolower($ctx->getText());
+    if ($text == 'halo') {
+        $ctx->replyWithMarkdown(sprintf("Halo %s, apa kabar?", $ctx->getFrom('first_name')));
+    }
+});
+
+
+// sticker
 $bot->on('sticker', function($ctx){
-	// id sticker yang telah ada
-	$sticker = 'CAACAgUAAxkBAAKRAWC4GpTIb_PIw8Ze_ENXackrb3slAAIbAQACksQIV05PwRXgezXdHwQ';
-	$ctx->replyWithSticker($sticker);
+   // id sticker yang telah ada
+   $sticker = 'CAACAgUAAxkBAAKRAWC4GpTIb_PIw8Ze_ENXackrb3slAAIbAQACksQIV05PwRXgezXdHwQ';
+   $ctx->replyWithSticker($sticker);
+}); 
+
+// Deteksi Text Biasa
+$bot->hears('marco', function($ctx){
+	$ctx->replyWithMarkdown('*Pollo!*');
 });
 
-// Text Biasa
-$bot->hears('halo', function($ctx){
-	$ctx->replyWithMarkdown('*Hayy!*');
-});
-
-// Regex
-$bot->hears('/^\/start/i', function($ctx){
+// Deteksi Text Regex
+$bot->hears('/^\/status/i', function($ctx){
 	$ctx->replyWithHTML('<i>let\'s play together!</i>');
 });
 
@@ -51,23 +70,25 @@ $bot->hears('exception', function($ctx){
 });
 
 
-// sendPhoto
+// sendPhoto dengan foto yang telah ada di server Telegram
 $bot->hears('foto_id', function($ctx){
 	$photo = 'AgACAgUAAxkBAAIB72C4yRAIBpu3-WQO-j1ePfrV4x8DAAJaqzEbgLTIVZZ_UejLyB5Fp96wcnQAAwEAAwIAA3MAA4UuAAIfBA';
 	$ctx->replyWithPhoto($photo, 'foto id');
 });
 
-// sendPhoto
+// sendPhoto dengan mengupload foto dari URL
 $bot->hears('foto_url', function($ctx){
 	$photo = 'https://i.pinimg.com/736x/16/02/6a/16026a38245d4f6cd1f2b3fde54bbced.jpg';
 	$ctx->replyWithPhoto($photo, 'foto url');
 });
 
-// sendPhoto
+// sendPhoto dengan mengupload foto dari file lokal
 $bot->hears('foto_up', function($ctx){
 	// upload foto
-	$photo = __DIR__ . '/doraemon.jpg';
+	$photo = __DIR__ . '/example-files/doraemon.jpg';
 	$ctx->replyWithPhoto($photo, 'foto upload');
 });
 
+// untuk menjalankan bot secara long_polling gunakan
+// untuk default parameter bisa dilihat pada `src/Dbot.php`
 $bot->launch();
