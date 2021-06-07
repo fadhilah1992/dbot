@@ -172,7 +172,7 @@ class Client
             unset($error['error_code']);
             $error['description'] = Psr7\Message::toString($e->getRequest());
         }
-
+        
         if (!is_null($error['description'])) {
             return $error;
         }

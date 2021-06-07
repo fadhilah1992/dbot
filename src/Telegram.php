@@ -33,10 +33,6 @@ class Telegram
             return $request['result']['result'];
         } else {
             // error response
-            if (isset($request['error'])) {
-                return $request;
-            }
-
             return $request;
         }
     }
