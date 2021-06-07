@@ -149,13 +149,6 @@ $bot->launch(false, [
 ]);
 ```
 
-## Kontributor
-- fatah 
-- fadhilah1992
--
--
--
-
 ## Kontribusi
-Silahkan untuk berkontribusi, lakukan pengembangan, baik penambahan method yang belum ada, ataupun membuat fitur lainya, lakukan pull request, dan tulis username github anda pada list kontributor :)
+Silahkan untuk berkontribusi, lakukan pengembangan, baik penambahan method yang belum ada, ataupun membuat fitur lainya, lakukan pull request.
 Bisa juga dengan membuat issues baru, tuliskan saran penambahan fitur, laporan bug, penyempurnaan code, dan lain lain.
