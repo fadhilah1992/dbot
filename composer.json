@@ -4,7 +4,6 @@
     "type": "project",
     "require-dev": {
         "kint-php/kint": "^3.3",
-        "squizlabs/php_codesniffer": "3.*",
         "phpunit/phpunit": "^9.5"
     },
     "license": "MIT",
@@ -24,9 +23,6 @@
         }
     },
     "scripts": {
-        "phpcbf": [
-            "\"vendor/bin/phpcbf\""
-        ],
         "phpcs": [
             "\"vendor/bin/phpcs\""
         ],
